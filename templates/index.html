@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Footprint Calculator - Agricultural Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { font-family: 'Inter', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); /* Light green base */
+            background-size: 400% 400%;
+            animation: gradientShift 18s ease infinite; /* Slightly slower animation */
+            min-height: 100vh;
+            color: #2D3748; /* Dark text color */
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.85); /* More opaque white */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9); /* Very light border */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Soft shadow */
+        }
+
+         .hover-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease-out;
+        }
+
+        .hover-3d:hover {
+            transform: perspective(1000px) rotateX(1deg) rotateY(1deg); /* Minimal rotation */
+        }
+
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%; /* Start further left */
+            width: 60%; /* Wider shine */
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); /* More prominent shine */
+            animation: shine 4s infinite ease-in-out; /* Slower shine */
+        }
+
+        @keyframes shine {
+            0% { left: -120%; }
+            60% { left: 120%; } /* Go further right */
+            100% { left: 120%; }
+        }
+
+
+        .float-animation {
+            animation: float 7s ease-in-out infinite; /* Slower float */
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); } /* Slightly more float */
+        }
+
+        .drop-shadow-custom {
+             filter: drop-shadow(0 6px 12px rgba(74, 222, 128, 0.3)); /* Softer green shadow */
+        }
+
+
+        .pulse-glow {
+            animation: pulseGlow 2.5s ease-in-out infinite alternate; /* Slower pulse */
+        }
+
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 12px rgba(74, 222, 128, 0.7); } /* Stronger green glow */
+            to { box-shadow: 0 0 20px rgba(74, 222, 128, 1); }
+        }
+
+        .loading-dots::after {
+            content: '';
+            display: inline-block;
+            animation: loadingDots 1.5s infinite steps(3, end);
+        }
+
+        @keyframes loadingDots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Load-in Animations */
+        .slide-in {
+            animation: slideIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Smoother curve */
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Smoother curve */
+            opacity: 0;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.98); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .fade-in {
+             animation: fadeIn 0.7s ease-out forwards;
+             opacity: 0;
+        }
+         @keyframes fadeIn {
+             from { opacity: 0; }
+             to { opacity: 1; }
+         }
+
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1); /* Increased hover shadow */
+        }
+
+
+        .upload-area {
+            border: 3px dashed #68D391; /* Lighter Green */
+            transition: all 0.3s ease;
+        }
+
+        .upload-area.has-image {
+             border-style: solid;
+             border-color: #38A169; /* Darker Green */
+             background: rgba(74, 222, 128, 0.08); /* Light greenish background */
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+             padding: 2rem; /* Slightly adjusted padding when image is present */
+        }
+
+
+        .upload-area:hover {
+            border-color: #38A169;
+            background: rgba(74, 222, 128, 0.05);
+             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Subtle shadow on hover */
+        }
+
+        .upload-area.dragover {
+            border-color: #2F855A; /* Even Darker Green */
+            background: rgba(74, 222, 128, 0.12);
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area img {
+             max-width: 180px; /* Slightly larger preview */
+             max-height: 180px;
+             object-fit: cover;
+             border-radius: 0.75rem; /* More rounded corners */
+             margin-bottom: 1.5rem; /* More space below image */
+             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+             transition: transform 0.3s ease;
+        }
+
+        .upload-area img:hover {
+             transform: scale(1.05); /* Subtle zoom on image hover */
+        }
+
+        .upload-area.has-image .upload-area-content {
+             text-align: center;
+        }
+
+
+        .metric-card {
+             background: rgba(255, 255, 255, 0.9); /* Very light card background */
+             border: 1px solid rgba(255, 255, 255, 0.95); /* Almost invisible border */
+             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Soft initial shadow */
+             color: #2D3748;
+        }
+
+        .metric-card h3, .metric-card h4 { color: #2D3748; }
+        .metric-card p { color: #4A5568; }
+
+        /* Apply hover-lift to metric-card */
+        .metric-card.hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* More pronounced hover shadow */
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+             background-color: rgba(255, 255, 255, 0.6); /* Lighter inactive button */
+             color: #4A5568;
+             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow on inactive */
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #48BB78, #81E6D9); /* Green to Teal gradient */
+            color: white;
+            border-color: #81E6D9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Stronger shadow for active */
+             transform: translateY(-2px); /* Slight lift on active */
+        }
+
+         .tab-button:not(.active):hover {
+             background-color: rgba(255, 255, 255, 0.9); /* Lighter hover for inactive */
+             border-color: rgba(0, 0, 0, 0.05);
+             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+         }
+
+        /* Chart Styling */
+        canvas {
+             background: rgba(255, 255, 255, 1);
+             border-radius: 0.75rem;
+             padding: 1.5rem;
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom Colors for elements on LIGHT background */
+        .text-primary { color: #38A169; } /* Dark Green */
+        .text-secondary { color: #319795; } /* Dark Teal */
+        .text-accent { color: #D69E2E; } /* Orange-Yellow */
+
+         /* Severity Colors */
+        .severity-low { color: #38A169; } /* Dark Green */
+        .severity-medium { color: #D69E2E; } /* Orange-Yellow */
+        .severity-high { color: #C53030; } /* Darker Red */
+        .severity-very-high { color: #9B2C2C; } /* Even Darker Red */
+        .severity-unknown { color: #718096; } /* Gray */
+
+
+        .bg-card { background: rgba(255, 255, 255, 0.9); }
+        .bg-chart { background: rgba(255, 255, 255, 1); }
+
+         /* Table Styling for Comparisons */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+             color: #2D3748;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 0.9rem; /* Slightly more padding */
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06); /* Very light border */
+        }
+
+        .comparison-table th {
+            background-color: rgba(0, 0, 0, 0.03); /* Very light header background */
+            color: #2D3748;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table td {
+             color: #4A5568;
+        }
+
+         .comparison-table tbody tr {
+             transition: background-color 0.2s ease;
+         }
+
+         .comparison-table tbody tr:hover {
+             background-color: rgba(0, 0, 0, 0.05); /* Slightly darker hover */
+         }
+
+         /* Water Definitions Section */
+         .water-definitions {
+             background: rgba(255, 255, 255, 0.9);
+             border: 1px solid rgba(255, 255, 255, 0.95);
+             border-radius: 0.75rem;
+             padding: 1.5rem;
+             margin-top: 2rem;
+             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+             color: #2D3748;
+         }
+
+         .water-definitions h3 {
+             color: #2F855A;
+             margin-bottom: 1.2rem; /* More space below heading */
+             font-weight: 700;
+             font-size: 1.6rem;
+         }
+
+         .water-definitions dl {
+             display: grid;
+             grid-template-columns: auto 1fr;
+             gap: 1.2rem; /* Slightly more gap */
+         }
+
+         .water-definitions dt {
+             font-weight: 600;
+             color: #38A169;
+         }
+
+         .water-definitions dd {
+             color: #4A5568;
+             margin-left: 0;
+         }
+
+         /* Hover for list items in tabs */
+         .tab-content-list-item {
+             transition: background-color 0.2s ease;
+         }
+         .tab-content-list-item:hover {
+             background-color: rgba(0, 0, 0, 0.03); /* Light hover background */
+         }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="glass-effect p-6 mb-12 slide-in">
+        <div class="container mx-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div class="text-5xl text-green-500 drop-shadow-custom">💧</div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 drop-shadow-lg text-center">Water Footprint Calculator</h1>
+                <div class="text-5xl text-green-400 float-animation">🌱</div>
+            </div>
+            <p class="text-center text-gray-600 mt-3 text-base sm:text-lg">Discover the water impact of agricultural products</p>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Upload Section -->
+        <div class="glass-effect rounded-2xl p-8 mb-12 shine-effect hover-3d origin-center hover-lift" id="uploadContainer"> <!-- Added hover-lift -->
+            <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-8 text-center">
+                <i class="fas fa-camera mr-3 text-primary"></i>Upload Product Image
+            </h2>
+
+            <div class="upload-area rounded-xl p-10 text-center cursor-pointer transition duration-300 ease-in-out flex flex-col items-center justify-center" id="uploadArea">
+                 <img id="imagePreview" src="" alt="Image Preview" class="hidden rounded-md mb-4">
+                 <div class="upload-area-content">
+                    <div class="text-6xl sm:text-7xl mb-6">📸</div>
+                    <p class="text-xl sm:text-2xl text-green-700 font-medium mb-3">Drop your image here or click to browse</p>
+                    <p class="text-green-600 text-base sm:text-lg">Supports JPG, PNG, WebP formats</p>
+                 </div>
+                <input type="file" id="imageInput" accept="image/*" class="hidden">
+            </div>
+
+            <button
+                id="analyzeBtn"
+                class="w-full mt-8 bg-gradient-to-r from-green-500 to-teal-500 text-white py-4 sm:py-5 px-6 sm:px-8 rounded-xl font-bold text-lg sm:text-xl hover:from-green-600 hover:to-teal-600 transform hover:scale-105 transition-all duration-300 pulse-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled
+            >
+                <i class="fas fa-chart-line mr-3"></i>
+                Analyze Water Footprint
+            </button>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="hidden glass-effect rounded-2xl p-8 mb-12 text-center scale-in">
+            <div class="text-5xl sm:text-6xl mb-6 text-green-500 pulse-glow">💧</div> <!-- Added pulse-glow to icon -->
+            <h3 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
+                <span id="loadingMessage">Analyzing Image</span><span class="loading-dots"></span>
+            </h3>
+            <p id="loadingSubMessage" class="text-gray-600 text-base sm:text-lg">Processing and calculating environmental impact...</p>
+            <div class="mt-8">
+                <div class="w-full bg-gray-300 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-green-500 to-teal-500 h-3 rounded-full animate-pulse" style="width: 80%"></div>
+                </div>
+            </div>
+        </div>
+
+         <!-- Error Section -->
+         <div id="errorSection" class="hidden glass-effect rounded-2xl p-8 mb-12 text-center scale-in bg-red-100 border border-red-400 text-red-800">
+            <div class="text-5xl sm:text-6xl mb-6 text-red-500">❌</div>
+            <h3 class="text-2xl sm:text-3xl font-semibold text-red-800 mb-4">Analysis Failed</h3>
+            <p id="errorMessage" class="text-red-700 text-base sm:text-lg mb-4">An unexpected error occurred during analysis.</p>
+             <p id="fallbackMessage" class="text-yellow-800 text-sm italic hidden"></p>
+         </div>
+
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Product Identification -->
+            <div class="glass-effect rounded-2xl p-8 mb-12 slide-in hover-lift" style="animation-delay: 0.2s;"> <!-- Added hover-lift -->
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-search mr-3 text-primary"></i>Product Identification
+                </h2>
+                <div id="productInfo" class="grid md:grid-cols-2 gap-8">
+                    <!-- Product info will be populated here -->
+                </div>
+            </div>
+
+            <!-- Water Footprint Overview -->
+            <div class="glass-effect rounded-2xl p-8 mb-12 scale-in hover-lift" style="animation-delay: 0.4s;"> <!-- Added hover-lift -->
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-tint mr-3 text-green-600"></i>Water Footprint Analysis
+                </h2>
+                 <div id="overallSeverity" class="mb-8 text-center p-4 rounded-lg border border-gray-200 bg-white shadow-sm"> <!-- Lighter border -->
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Overall Water Footprint Severity:</h3>
+                    <p class="text-3xl font-bold severity-unknown" id="severityText">Calculating...</p>
+                 </div>
+
+                <div id="waterFootprintMetrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <!-- Metrics will be populated here -->
+                </div>
+
+                <!-- Water Definitions Section -->
+                 <div id="waterDefinitions" class="water-definitions hidden">
+                     <!-- Definitions populated here by JS -->
+                 </div>
+
+
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div class="bg-chart rounded-xl p-6 shadow-lg">
+                        <canvas id="waterBreakdownChart"></canvas>
+                    </div>
+                    <div class="bg-chart rounded-xl p-6 shadow-lg">
+                        <canvas id="regionalComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis Tabs -->
+            <div class="glass-effect rounded-2xl p-8 mb-12 slide-in hover-lift" style="animation-delay: 0.6s;"> <!-- Added hover-lift -->
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+                     <i class="fas fa-chart-pie mr-3 text-teal-700"></i>Detailed Analysis
+                </h2>
+                <div class="flex flex-wrap gap-3 mb-8" id="tabButtons">
+                    <button class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium active" data-tab="environmental">
+                        <i class="fas fa-leaf mr-2 text-green-700"></i>Environmental Impact
+                    </button>
+                    <button class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium" data-tab="production">
+                        <i class="fas fa-industry mr-2 text-gray-600"></i>Production Insights
+                    </button>
+                    <button class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium" data-tab="comparisons">
+                        <i class="fas fa-chart-bar mr-2 text-orange-700"></i>Comparisons
+                    </button>
+                    <button class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium" data-tab="recommendations">
+                        <i class="fas fa-lightbulb mr-2 text-purple-700"></i>Recommendations
+                    </button>
+                     <button class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium" data-tab="more-metrics">
+                        <i class="fas fa-balance-scale mr-2 text-cyan-700"></i>More Metrics
+                    </button>
+                </div>
+
+                <div id="tabContent" class="fade-in">
+                    <!-- Tab content will be populated here -->
+                </div>
+            </div>
+
+            <!-- Fun Facts Section -->
+            <div class="glass-effect rounded-2xl p-8 mb-12 scale-in hover-lift" style="animation-delay: 0.8s;"> <!-- Added hover-lift -->
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-star mr-3 text-yellow-600"></i>Interesting Facts
+                </h2>
+                <div id="funFacts" class="grid md:grid-cols-2 gap-6">
+                    <!-- Facts will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer removed -->
+
+    <script>
+        let uploadedImage = null;
+        let currentImageFile = null;
+        let currentCharts = {}; // Store chart instances
+
+        // DOM Elements
+        const uploadContainer = document.getElementById('uploadContainer'); // New
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadAreaContent = uploadArea.querySelector('.upload-area-content');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loadingSubMessage = document.getElementById('loadingSubMessage');
+        const resultsSection = document.getElementById('resultsSection');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const fallbackMessage = document.getElementById('fallbackMessage');
+        const severityText = document.getElementById('severityText');
+        const waterDefinitionsSection = document.getElementById('waterDefinitions');
+
+
+        // Upload functionality
+        uploadArea.addEventListener('click', (e) => {
+             // Only trigger input click if not clicking on the image itself when previewing
+             if (e.target !== imagePreview && !uploadArea.classList.contains('has-image')) { // Check if it's the preview or if there's no image
+                 imageInput.click();
+             } else if (e.target === imagePreview && uploadArea.classList.contains('has-image')) {
+                 // If clicking the image preview itself, also trigger input click to allow changing image
+                 imageInput.click();
+             } else if (e.target !== imagePreview && uploadArea.classList.contains('has-image')) {
+                 // If clicking the text area when an image is present, also trigger input click
+                 imageInput.click();
+             }
+        });
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        imageInput.addEventListener('change', handleFileSelect);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file.');
+                return;
+            }
+
+            currentImageFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage = e.target.result;
+                updateUploadArea(file.name, uploadedImage);
+                analyzeBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateUploadArea(fileName, imageUrl) {
+             uploadArea.classList.remove('dragover');
+             uploadArea.classList.add('has-image');
+             uploadArea.classList.remove('shine-effect'); // Remove animation after upload
+             uploadContainer.classList.remove('shine-effect'); // Remove from container too
+
+             // Display image preview
+             imagePreview.src = imageUrl;
+             imagePreview.classList.remove('hidden');
+
+             // Update text content
+             uploadAreaContent.innerHTML = `
+                 <div class="text-xl sm:text-2xl text-green-700 font-medium mb-2"><i class="fas fa-check-circle text-green-500 mr-2"></i>${fileName}</div>
+                 <p class="text-green-600 text-base sm:text-lg">Image uploaded successfully! Click area or image to change.</p>
+             `;
+
+             // Arrange elements: image first, then content
+             uploadArea.insertBefore(imagePreview, uploadAreaContent);
+        }
+
+        function resetUploadArea() {
+            uploadedImage = null;
+            currentImageFile = null;
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-chart-line mr-3"></i> Analyze Water Footprint';
+
+            uploadArea.classList.remove('has-image');
+             uploadArea.classList.add('shine-effect'); // Add shine back to area
+             uploadContainer.classList.add('shine-effect'); // Add shine back to container
+
+             if (imagePreview.parentNode === uploadArea) {
+                 imagePreview.classList.add('hidden'); // Hide it
+                 imagePreview.src = ''; // Clear the image source
+                 // Remove the image from the parent DOM temporarily if needed, or just hide it well
+                 // Let's just hide and clear src, re-inserting seems overly complex.
+             }
+
+
+             uploadAreaContent.innerHTML = `
+                 <div class="text-6xl sm:text-7xl mb-6">📸</div>
+                 <p class="text-xl sm:text-2xl text-green-700 font-medium mb-3">Drop your image here or click to browse</p>
+                 <p class="text-green-600 text-base sm:text-lg">Supports JPG, PNG, WebP formats</p>
+             `;
+             imageInput.value = null; // Clear file input value
+             // Ensure content is correctly positioned - maybe just remove image and let content take over
+             if (imagePreview.parentNode === uploadArea) {
+                 uploadArea.removeChild(imagePreview); // Remove the image element
+             }
+             // Add it back hidden so the next upload can insert it again
+             uploadArea.appendChild(imagePreview);
+             imagePreview.classList.add('hidden'); // Ensure it's hidden initially
+
+        }
+
+
+        // Analysis functionality
+        analyzeBtn.addEventListener('click', analyzeImage);
+
+         const loadingMessages = [
+             "Detecting product...",
+             "Estimating water usage...",
+             "Analyzing environmental impact...",
+             "Comparing metrics...",
+             "Generating recommendations...",
+             "Finalizing report..."
+         ];
+         let messageIndex = 0;
+         let loadingInterval;
+
+         function startLoadingAnimation() {
+             loadingMessage.textContent = loadingMessages[messageIndex];
+             loadingSubMessage.textContent = "Processing your image and calculating environmental impact...";
+
+             loadingInterval = setInterval(() => {
+                 messageIndex = (messageIndex + 1) % loadingMessages.length;
+                 loadingMessage.textContent = loadingMessages[messageIndex];
+             }, 2000);
+         }
+
+         function stopLoadingAnimation() {
+             clearInterval(loadingInterval);
+             messageIndex = 0;
+         }
+
+
+        async function analyzeImage() {
+            if (!uploadedImage) return;
+
+            // Hide previous results/errors, show loading
+            resultsSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
+             startLoadingAnimation();
+
+            analyzeBtn.disabled = true;
+             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing...';
+
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: uploadedImage
+                    })
+                });
+
+                 const result = await response.json();
+                 stopLoadingAnimation();
+
+                 if (response.ok && result.success) { // Check both HTTP status and internal success flag
+                    displayResults(result.data);
+                    loadingSection.classList.add('hidden');
+                    resultsSection.classList.remove('hidden');
+                 } else {
+                     // Handle non-200 HTTP responses or API success: False
+                     const errorReason = result.error || `HTTP Error: ${response.status}`;
+                     console.error('Analysis API returned failure:', errorReason, result);
+
+                     loadingSection.classList.add('hidden');
+                     errorSection.classList.remove('hidden');
+                     errorMessage.textContent = errorReason;
+
+                     // If partial data is present, display it and show a fallback message
+                     if (result.data && (Object.keys(result.data).length > 0 || (result.data.raw_analysis_text_fallback))) {
+                          fallbackMessage.textContent = "Partial data might be available below. Raw AI output included for reference.";
+                          fallbackMessage.classList.remove('hidden');
+                          displayResults(result.data); // Try displaying partial data
+                          resultsSection.classList.remove('hidden'); // Show results section even with partial data
+                     } else {
+                          // No usable data fallback
+                          fallbackMessage.classList.add('hidden');
+                           // Clear any potentially partial results data display from a previous run
+                           clearResultsDisplay();
+                     }
+                 }
+            } catch (error) {
+                // Handle network errors or other unexpected exceptions
+                console.error('Error during analysis fetch:', error);
+                stopLoadingAnimation();
+                loadingSection.classList.add('hidden');
+                errorSection.classList.remove('hidden');
+                errorMessage.textContent = 'Network error or unexpected issue: ' + error.message;
+                fallbackMessage.classList.add('hidden');
+                 // Clear any potentially partial results data display
+                 clearResultsDisplay();
+            } finally {
+                analyzeBtn.disabled = false;
+                 analyzeBtn.innerHTML = '<i class="fas fa-chart-line mr-2"></i>Analyze Water Footprint';
+            }
+        }
+
+         function clearResultsDisplay() {
+            document.getElementById('productInfo').innerHTML = '';
+            document.getElementById('waterFootprintMetrics').innerHTML = '';
+            document.getElementById('waterDefinitions').innerHTML = '';
+            document.getElementById('tabContent').innerHTML = '';
+            document.getElementById('funFacts').innerHTML = '';
+            document.getElementById('overallSeverity').querySelector('#severityText').textContent = 'N/A'; // Reset severity text
+             document.getElementById('overallSeverity').querySelector('#severityText').className = 'text-3xl font-bold severity-unknown'; // Reset severity styling
+
+            // Destroy charts explicitly and replace canvases with placeholders
+             const waterBreakdownChartContainer = document.getElementById('waterBreakdownChart').closest('.bg-chart');
+             if (currentCharts['waterBreakdownChart']) {
+                 currentCharts['waterBreakdownChart'].destroy();
+                 currentCharts['waterBreakdownChart'] = null;
+             }
+            if (waterBreakdownChartContainer) waterBreakdownChartContainer.innerHTML = '<canvas id="waterBreakdownChart"></canvas><p class="text-center text-gray-600 mt-4">Chart data not available.</p>'; // Add message
+
+             const regionalComparisonChartContainer = document.getElementById('regionalComparisonChart').closest('.bg-chart');
+            if (currentCharts['regionalComparisonChart']) {
+                 currentCharts['regionalComparisonChart'].destroy();
+                 currentCharts['regionalComparisonChart'] = null;
+             }
+             if (regionalComparisonChartContainer) regionalComparisonChartContainer.innerHTML = '<canvas id="regionalComparisonChart"></canvas><p class="text-center text-gray-600 mt-4">Chart data not available.</p>'; // Add message
+
+             // Hide the definitions section
+             document.getElementById('waterDefinitions').classList.add('hidden');
+         }
+
+
+        function displayResults(data) {
+            // Destroy previous charts if they exist
+            for (const chartId in currentCharts) {
+                if (currentCharts[chartId]) {
+                    currentCharts[chartId].destroy();
+                    currentCharts[chartId] = null;
+                }
+            }
+
+            displayProductInfo(data.product_identification);
+            displayOverallSeverity(data.overall_severity);
+            displayWaterFootprint(data.water_footprint);
+            displayWaterDefinitions(data.definitions);
+            setupTabs(data);
+            displayFunFacts(data.interesting_facts || []);
+
+
+             // Ensure canvas containers exist and are ready before creating charts
+             const waterBreakdownChartElement = document.getElementById('waterBreakdownChart');
+             const regionalComparisonChartElement = document.getElementById('regionalComparisonChart');
+
+             // Replace placeholder message with clean canvas if data exists
+             if (data.water_breakdown_chart && waterBreakdownChartElement && waterBreakdownChartElement.closest('.bg-chart').querySelector('p')) {
+                 waterBreakdownChartElement.closest('.bg-chart').innerHTML = '<canvas id="waterBreakdownChart"></canvas>';
+             }
+             if (data.regional_comparison_chart && regionalComparisonChartElement && regionalComparisonChartElement.closest('.bg-chart').querySelector('p')) {
+                 regionalComparisonChartElement.closest('.bg-chart').innerHTML = '<canvas id="regionalComparisonChart"></canvas>';
+             }
+
+
+            // Create charts AFTER the results section is shown and potential partial data handled
+             setTimeout(() => {
+                 // Re-get the canvas elements in case they were replaced
+                 const newWaterBreakdownCtx = document.getElementById('waterBreakdownChart')?.getContext('2d');
+                 const newRegionalComparisonCtx = document.getElementById('regionalComparisonChart')?.getContext('2d');
+
+                 if (data.water_breakdown_chart && newWaterBreakdownCtx) {
+                     createWaterBreakdownChart(data.water_breakdown_chart, newWaterBreakdownCtx);
+                 } else if (newWaterBreakdownCtx?.closest('.bg-chart')) {
+                     // If element exists but no data, show message
+                     newWaterBreakdownCtx.closest('.bg-chart').innerHTML = '<canvas id="waterBreakdownChart"></canvas><p class="text-center text-gray-600 mt-4">Chart data not available.</p>';
+                 }
+
+                 if (data.regional_comparison_chart && newRegionalComparisonCtx) {
+                     createRegionalComparisonChart(data.regional_comparison_chart, newRegionalComparisonCtx);
+                 } else if (newRegionalComparisonCtx?.closest('.bg-chart')) {
+                      // If element exists but no data, show message
+                      newRegionalComparisonCtx.closest('.bg-chart').innerHTML = '<canvas id="regionalComparisonChart"></canvas><p class="text-center text-gray-600 mt-4">Chart data not available.</p>';
+                 }
+
+             }, 100); // Small delay
+
+            // Trigger animations for results sections
+             document.querySelectorAll('#resultsSection > div').forEach((el, index) => {
+                 el.classList.remove('slide-in', 'scale-in'); // Reset if already present
+                 void el.offsetWidth; // Trigger reflow
+                 // Re-add classes to re-trigger animation
+                 if (index % 2 === 0) el.classList.add('slide-in');
+                 else el.classList.add('scale-in');
+                  el.style.animationDelay = `${0.2 + index * 0.15}s`; // Slightly faster delay
+             });
+        }
+
+         function displayOverallSeverity(severity) {
+             const severityElement = document.getElementById('severityText');
+             let severityClass = 'severity-unknown';
+
+             severityElement.textContent = severity || 'Unknown';
+             severityElement.classList.remove('severity-low', 'severity-medium', 'severity-high', 'severity-very-high', 'severity-unknown');
+
+             if (severity) {
+                 const lowerSeverity = severity.toLowerCase();
+                 if (lowerSeverity.includes('very high')) {
+                     severityClass = 'severity-very-high';
+                 } else if (lowerSeverity.includes('high')) {
+                     severityClass = 'severity-high';
+                 } else if (lowerSeverity.includes('medium')) {
+                     severityClass = 'severity-medium';
+                 } else if (lowerSeverity.includes('low')) {
+                     severityClass = 'severity-low';
+                 }
+             }
+             severityElement.classList.add(severityClass);
+         }
+
+
+        function displayProductInfo(productInfo) {
+            const container = document.getElementById('productInfo');
+             if (!productInfo || Object.keys(productInfo).length === 0 || (!productInfo.detected_product && !productInfo.category)) {
+                 container.innerHTML = '<p class="text-gray-600 col-span-2">Product identification data not available.</p>';
+                 return;
+             }
+            container.innerHTML = `
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-seedling mr-2 text-primary"></i>Detected Product
+                    </h3>
+                    <p class="text-3xl font-bold text-primary">${productInfo?.detected_product || 'Unknown'}</p>
+                    <p class="text-gray-600 mt-2 text-sm">Confidence: ${productInfo?.confidence || 'N/A'}</p>
+                </div>
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-xl font-semibold mb-4">
+                        <i class="fas fa-tags mr-2 text-accent"></i>Category
+                    </h3>
+                    <p class="text-2xl font-bold text-secondary">${productInfo?.category || 'Agricultural Product'}</p>
+                    <p class="text-gray-600 mt-2 text-sm">${productInfo?.scientific_name || 'Classification'}</p>
+                </div>
+            `;
+        }
+
+        function displayWaterFootprint(footprint) {
+            const container = document.getElementById('waterFootprintMetrics');
+             if (!footprint || Object.keys(footprint).length === 0 || (!footprint.total_footprint && !footprint.green_water && !footprint.blue_water && !footprint.grey_water)) {
+                  container.innerHTML = '<p class="text-gray-600 col-span-4">Water footprint data not available.</p>';
+                 return;
+             }
+            container.innerHTML = `
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-tint mr-2 text-green-600"></i>Total Footprint
+                    </h3>
+                    <p class="text-2xl font-bold text-green-600">${footprint?.total_footprint || 'N/A'}</p>
+                     <p class="text-sm text-gray-600 mt-1">Global Avg: ${footprint?.global_average || 'N/A'}</p>
+                </div>
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-cloud-rain mr-2 text-green-700"></i>Green Water
+                    </h3>
+                    <p class="text-2xl font-bold text-green-700">${footprint?.green_water || 'N/A'}</p>
+                </div>
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-water mr-2 text-blue-500"></i>Blue Water
+                    </h3>
+                    <p class="text-2xl font-bold text-blue-500">${footprint?.blue_water || 'N/A'}</p>
+                </div>
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-flask mr-2 text-purple-600"></i>Grey Water
+                    </h3>
+                    <p class="text-2xl font-bold text-purple-600">${footprint?.grey_water || 'N/A'}</p>
+                </div>
+            `;
+        }
+
+        function displayWaterDefinitions(definitions) {
+            const container = document.getElementById('waterDefinitions');
+            if (!definitions || Object.keys(definitions).length === 0 || (!definitions.green_water && !definitions.blue_water && !definitions.grey_water)) {
+                 container.classList.add('hidden');
+                 container.innerHTML = '';
+                 return;
+             }
+            container.classList.remove('hidden');
+
+            container.innerHTML = `
+                 <h3>Understanding Your Water Footprint</h3>
+                 <dl>
+                     <dt><i class="fas fa-cloud-rain mr-2 text-green-700"></i>Green Water:</dt>
+                     <dd>${definitions.green_water || 'The volume of rainwater that is stored as soil moisture and evaporates from the soil and from plants.'}</dd>
+
+                     <dt><i class="fas fa-water mr-2 text-blue-500"></i>Blue Water:</dt>
+                     <dd>${definitions.blue_water || 'The volume of surface and groundwater required (evaporated or incorporated into a product).'}</dd>
+
+                     <dt><i class="fas fa-flask mr-2 text-purple-600"></i>Grey Water:</dt>
+                     <dd>${definitions.grey_water || 'The volume of freshwater required to assimilate the load of pollutants based on existing ambient water quality standards.'}</dd>
+                 </dl>
+             `;
+        }
+
+
+        function createWaterBreakdownChart(data, ctx) {
+             const backgroundColors = data.colors || ['#48BB78', '#4299E1', '#A78BFA']; // Green, Blue, Purple
+             // Ensure values are numbers for the chart
+             const values = (data.values || []).map(v => parseFloat(v)).filter(v => !isNaN(v));
+
+             if (currentCharts['waterBreakdownChart']) currentCharts['waterBreakdownChart'].destroy();
+            currentCharts['waterBreakdownChart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels || ['Green Water', 'Blue Water', 'Grey Water'],
+                    datasets: [{
+                        data: values.length === 3 ? values : [0, 0, 0], // Use parsed values, default to zero
+                        backgroundColor: backgroundColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Water Footprint Breakdown (%)',
+                             color: '#2D3748',
+                             font: { size: 18, weight: 'bold' }
+                        },
+                        legend: {
+                            position: 'bottom',
+                             labels: { color: '#4A5568', font: { size: 12 } }
+                        },
+                         tooltip: {
+                             callbacks: {
+                                 label: function(tooltipItem) {
+                                      const value = parseFloat(tooltipItem.raw);
+                                      if (isNaN(value)) return tooltipItem.label + ': N/A';
+                                     return tooltipItem.label + ': ' + value.toFixed(1) + '%';
+                                 }
+                             }
+                         }
+                    }
+                }
+            });
+        }
+
+        function createRegionalComparisonChart(data, ctx) {
+            if (currentCharts['regionalComparisonChart']) currentCharts['regionalComparisonChart'].destroy();
+
+             const barColors = ['#48BB78', '#D69E2E', '#4FD1C5', '#ECC94B']; // Green, Orange, Teal, Yellow
+             // Ensure values are numbers for the chart
+             const waterUsage = (data.water_usage || []).map(v => parseFloat(v)).filter(v => !isNaN(v));
+
+
+            currentCharts['regionalComparisonChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.regions || ['Global Average', 'Arid Regions', 'Temperate', 'Tropical'],
+                    datasets: [{
+                        label: 'Water Usage (L/kg)',
+                        data: waterUsage.length === 4 ? waterUsage : [0, 0, 0, 0], // Use parsed values, default to zero
+                        backgroundColor: barColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Regional Water Usage Comparison (L/kg)',
+                            color: '#2D3748',
+                            font: { size: 18, weight: 'bold' }
+                        },
+                         legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Liters per kg',
+                                color: '#4A5568',
+                                font: { size: 14 }
+                            },
+                             ticks: { color: '#4A5568' },
+                             grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        x: {
+                             ticks: { color: '#4A5568' },
+                             grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function setupTabs(data) {
+            const tabButtons = document.querySelectorAll('#tabButtons .tab-button');
+            const tabContent = document.getElementById('tabContent');
+
+            tabContent.innerHTML = ''; // Clear previous content
+
+            // Add event listeners to cloned buttons to prevent duplicates
+            tabButtons.forEach(button => {
+                 const newButton = button.cloneNode(true);
+                 button.parentNode.replaceChild(newButton, button);
+
+                 newButton.addEventListener('click', () => {
+                     document.querySelectorAll('#tabButtons .tab-button').forEach(btn => {
+                         btn.classList.remove('active', 'bg-gradient-to-r', 'from-green-500', 'to-teal-500', 'text-white', 'transform', 'translate-y-[-2px]');
+                         btn.classList.add('bg-white', 'bg-opacity-60', 'text-gray-600');
+                     });
+
+                     newButton.classList.add('active', 'bg-gradient-to-r', 'from-green-500', 'to-teal-500', 'text-white', 'transform', 'translate-y-[-2px]');
+                     newButton.classList.remove('bg-white', 'bg-opacity-60', 'text-gray-600');
+
+                     const tabType = newButton.getAttribute('data-tab');
+                     displayTabContent(tabType, data);
+                 });
+             });
+
+
+            // Display initial tab content and set active state
+            const firstButton = document.querySelector('#tabButtons .tab-button');
+            if (firstButton) {
+                 firstButton.click();
+            } else {
+                container.innerHTML = '<p class="text-gray-600">Select a tab to view details.</p>';
+            }
+        }
+
+        function displayTabContent(tabType, data) {
+            const container = document.getElementById('tabContent');
+            container.innerHTML = '';
+
+            let contentHTML = '';
+            switch(tabType) {
+                case 'environmental':
+                    contentHTML = createEnvironmentalTab(data.environmental_impact);
+                    break;
+                case 'production':
+                    contentHTML = createProductionTab(data.production_insights);
+                    break;
+                case 'comparisons':
+                    contentHTML = createComparisonsTab(data.comparisons);
+                    break;
+                case 'recommendations':
+                    contentHTML = createRecommendationsTab(data.recommendations);
+                    break;
+                 case 'more-metrics':
+                    contentHTML = createMoreMetricsTab(data.impact_metrics);
+                    break;
+                 default:
+                     contentHTML = '<p class="text-gray-600">Select a tab to view details.</p>';
+                     break;
+            }
+             container.innerHTML = contentHTML;
+             container.classList.remove('fade-in');
+             void container.offsetWidth;
+             container.classList.add('fade-in');
+
+             // Apply hover class to list items if they exist
+             container.querySelectorAll('.tab-content-list-item').forEach(item => {
+                 item.classList.add('hover-lift'); // Use the general hover-lift class
+             });
+        }
+
+        function createEnvironmentalTab(impact) {
+            if (!impact || Object.keys(impact).length === 0 || (!impact.severity_score && !impact.impact_category && !impact.sustainability_rating && !impact.carbon_footprint && !impact.land_use)) {
+                 return '<p class="text-gray-600">Environmental impact data not available.</p>';
+            }
+
+            return `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">Impact Assessment</h4>
+                        <div class="space-y-3 text-gray-700">
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Severity Score:</span>
+                                <span class="font-bold text-primary">${impact.severity_score || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Impact Category:</span>
+                                <span class="font-bold text-secondary">${impact.impact_category || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Sustainability Rating:</span>
+                                <span class="font-bold text-accent">${impact.sustainability_rating || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">Carbon & Land Impact</h4>
+                        <div class="space-y-3 text-gray-700">
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Carbon Footprint:</span>
+                                <span class="font-bold text-gray-700">${impact.carbon_footprint || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Land Use:</span>
+                                <span class="font-bold text-gray-700">${impact.land_use || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createProductionTab(insights) {
+            if (!insights || Object.keys(insights).length === 0 || (!insights.growing_season && !insights.water_efficiency && !insights.irrigation_dependency && !insights.climate_sensitivity && (insights.seasonal_availability?.length === 0 || !insights.seasonal_availability))) {
+                 return '<p class="text-gray-600">Production insights not available.</p>';
+            }
+
+            return `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">Production Details</h4>
+                        <div class="space-y-3 text-gray-700">
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Growing Season:</span>
+                                <span class="font-bold">${insights.growing_season || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Water Efficiency:</span>
+                                <span class="font-bold text-secondary">${insights.water_efficiency || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Irrigation Dependency:</span>
+                                <span class="font-bold">${insights.irrigation_dependency || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">Climate Factors</h4>
+                        <div class="space-y-3 text-gray-700">
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Climate Sensitivity:</span>
+                                <span class="font-bold">${insights.climate_sensitivity || 'N/A'}</span>
+                            </div>
+                            <div class="tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Seasonal Availability:</span>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    ${(insights.seasonal_availability || []).map(month =>
+                                        `<span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">${month}</span>`
+                                    ).join('')}
+                                    ${(insights.seasonal_availability || []).length === 0 ? '<span class="text-gray-500 text-sm">N/A</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createComparisonsTab(comparisons) {
+            if (!comparisons || (comparisons.vs_similar_products?.length === 0 && comparisons.vs_alternatives?.length === 0)) {
+                return '<p class="text-gray-600">Comparison data not available.</p>';
+            }
+
+            return `
+                <div class="space-y-8">
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift overflow-x-auto">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-chart-line mr-2 text-green-600"></i>Similar Products Comparison
+                        </h4>
+                         ${(comparisons.vs_similar_products && comparisons.vs_similar_products.length > 0) ? `
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Water Footprint</th>
+                                        <th>Difference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${comparisons.vs_similar_products.map(product => `
+                                        <tr>
+                                            <td class="font-medium text-gray-800">${product.product || 'Unknown'}</td>
+                                            <td>${product.water_footprint || 'N/A'}</td>
+                                            <td class="${product.difference?.includes('-') ? 'text-green-600' : product.difference ? 'text-red-600' : 'text-gray-600'}">
+                                                ${product.difference || 'N/A'}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                         ` : '<p class="text-gray-600">No similar products comparison available.</p>'}
+                    </div>
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-leaf mr-2 text-green-700"></i>Sustainable Alternatives
+                        </h4>
+                        <div class="space-y-3">
+                            ${(comparisons.vs_alternatives || []).map(alt => `
+                                <div class="p-3 bg-gray-100 rounded-lg tab-content-list-item hover-lift">
+                                    <div class="font-medium text-green-700">${alt.alternative || 'Unknown'}</div>
+                                    <div class="text-sm text-gray-700 mt-1">Saves: ${alt.water_savings || 'N/A'}</div>
+                                    <div class="text-sm text-gray-600 mt-1">${alt.benefit || ''}</div>
+                                </div>
+                            `).join('')}
+                             ${(comparisons.vs_alternatives || []).length === 0 ? '<p class="text-gray-600">No sustainable alternatives suggested.</p>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createRecommendationsTab(recommendations) {
+            if (!recommendations || (recommendations.consumer_tips?.length === 0 && recommendations.sustainable_practices?.length === 0 && recommendations.water_conservation?.length === 0 && !recommendations.seasonal_buying)) {
+                 return '<p class="text-gray-600">Recommendations not available.</p>';
+            }
+
+            return `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-user mr-2 text-purple-700"></i>Consumer Tips
+                        </h4>
+                        <ul class="space-y-3">
+                            ${(recommendations.consumer_tips || []).map(tip =>
+                                `<li class="flex items-start space-x-3 tab-content-list-item p-2 -mx-2 rounded-md">
+                                    <i class="fas fa-check-circle text-green-600 mt-1 text-lg"></i>
+                                    <span class="text-gray-700 leading-relaxed">${tip}</span>
+                                </li>`
+                            ).join('')}
+                             ${(recommendations.consumer_tips || []).length === 0 ? '<p class="text-gray-600">No consumer tips available.</p>' : ''}
+                        </ul>
+                    </div>
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-recycle mr-2 text-green-600"></i>Sustainable Practices (Production)
+                        </h4>
+                        <ul class="space-y-3">
+                            ${(recommendations.sustainable_practices || []).map(practice =>
+                                `<li class="flex items-start space-x-3 tab-content-list-item p-2 -mx-2 rounded-md">
+                                    <i class="fas fa-leaf text-teal-700 mt-1 text-lg"></i>
+                                    <span class="text-gray-700 leading-relaxed">${practice}</span>
+                                </li>`
+                            ).join('')}
+                             ${(recommendations.sustainable_practices || []).length === 0 ? '<p class="text-gray-600">No sustainable production practices suggested.</p>' : ''}
+                        </ul>
+                    </div>
+                     <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-tint mr-2 text-cyan-700"></i>Water Conservation Methods
+                        </h4>
+                        <ul class="space-y-3">
+                            ${(recommendations.water_conservation || []).map(method =>
+                                `<li class="flex items-start space-x-3 tab-content-list-item p-2 -mx-2 rounded-md">
+                                    <i class="fas fa-water text-blue-600 mt-1 text-lg"></i>
+                                    <span class="text-gray-700 leading-relaxed">${method}</span>
+                                </li>`
+                            ).join('')}
+                            ${(recommendations.water_conservation || []).length === 0 ? '<p class="text-gray-600">No water conservation methods suggested.</p>' : ''}
+                        </ul>
+                    </div>
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-calendar-alt mr-2 text-orange-600"></i>Seasonal Buying
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            <strong class="text-gray-800">Best time to buy:</strong> ${recommendations.seasonal_buying || 'Information not available'}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createMoreMetricsTab(metrics) {
+             if (!metrics || Object.keys(metrics).length === 0 || (!metrics.water_stress_contribution && !metrics.biodiversity_impact && !metrics.soil_health_impact && !metrics.economic_water_cost)) {
+                 return '<p class="text-gray-600">Additional metrics data not available.</p>';
+            }
+
+            return `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                        <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-balance-scale mr-2 text-cyan-700"></i>Advanced Metrics
+                        </h4>
+                        <div class="space-y-3 text-gray-700">
+                             <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Water Stress Contribution:</span>
+                                <span class="font-bold">${metrics.water_stress_contribution || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Biodiversity Impact:</span>
+                                <span class="font-bold">${metrics.biodiversity_impact || 'N/A'}</span>
+                            </div>
+                             <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Soil Health Impact:</span>
+                                <span class="font-bold">${metrics.soil_health_impact || 'N/A'}</span>
+                            </div>
+                             <div class="flex justify-between tab-content-list-item p-2 -mx-2 rounded-md">
+                                <span class="text-gray-600">Economic Water Cost:</span>
+                                <span class="font-bold">${metrics.economic_water_cost || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                         <h4 class="text-lg font-semibold mb-4">
+                            <i class="fas fa-info-circle mr-2 text-green-600"></i>About These Metrics
+                        </h4>
+                         <p class="text-gray-600 text-sm leading-relaxed">
+                             These metrics provide a deeper look into the environmental and economic context of the product's water usage. Water stress contribution relates to the scarcity of water in the production region. Biodiversity and soil health impacts consider broader ecological effects. Economic cost is an estimate of the water's value. Data availability may vary.
+                         </p>
+                     </div>
+                </div>
+            `;
+        }
+
+
+        function displayFunFacts(facts) {
+            const container = document.getElementById('funFacts');
+             if (!facts || facts.length === 0) {
+                 container.innerHTML = '<p class="text-gray-600 col-span-2">No interesting facts available.</p>';
+                 return;
+             }
+            container.innerHTML = facts.map((fact, index) => `
+                <div class="bg-card rounded-xl p-6 metric-card hover-lift">
+                    <div class="flex items-start space-x-4">
+                        <div class="text-3xl">${['💡', '🌍', '📊', '🔬', '💧', '🌱', '🍎', '🥕'][index % 8]}</div>
+                        <p class="text-gray-700 leading-relaxed text-sm">${fact}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize page animations
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('header').style.opacity = 0;
+            document.getElementById('uploadContainer').style.opacity = 0;
+
+            setTimeout(() => {
+                document.querySelector('header').style.opacity = 1;
+                document.querySelector('header').classList.add('slide-in');
+            }, 200);
+
+            setTimeout(() => {
+                 document.getElementById('uploadContainer').style.opacity = 1;
+                 document.getElementById('uploadContainer').classList.add('scale-in');
+            }, 400);
+        });
+
+         // Reset on load for clean state
+         resetUploadArea();
+    </script>
+</body>
+</html>
