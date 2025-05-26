@@ -103,7 +103,6 @@ Follow these steps to get the project running on your local machine:
 ## 📁 Project Structure
 Use code with caution.
 ```bash
-.
 ├── app.py # Flask backend application
 ├── requirements.txt # Python dependencies
 ├── .gitignore # Files ignored by Git
