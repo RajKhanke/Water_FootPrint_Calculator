@@ -109,8 +109,9 @@ Use code with caution.
 ├── .gitignore # Files ignored by Git
 └── templates/
 └── index.html # Frontend HTML with CSS and JavaScript
-## 🤖 AI Model
 ```
+
+## 🤖 AI Model
 
 This project uses the `gemini-1.5-flash-latest` model from the Google Gemini API. The Flask backend sends the uploaded image and a detailed prompt to the model, requesting a structured JSON response containing all the water footprint and environmental data. The backend then parses this JSON to display the information in the frontend.
 
