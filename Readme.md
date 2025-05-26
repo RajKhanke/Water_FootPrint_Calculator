@@ -128,7 +128,3 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 6.  Open a Pull Request.
 
 Please ensure your code adheres to the project's styling and includes necessary tests if applicable.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details (You'll need to create this file if you don't have one).
