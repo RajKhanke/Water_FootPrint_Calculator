@@ -1,6 +1,6 @@
 # 💧🌱 Water Footprint Calculator - Agricultural Products
 
-Welcome to the Water Footprint Calculator! This web application allows users to upload an image of an agricultural product and receive a detailed analysis of its water footprint, environmental impact, production insights, and more, powered by Google's Gemini AI.
+Welcome to the Water Footprint Calculator! This web application allows users to upload an image of an agricultural product and receive a detailed analysis of its water footprint, environmental impact, production insights, and more, powered by AIML Techniques.
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.3%2B-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
