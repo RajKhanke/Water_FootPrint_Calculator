@@ -102,7 +102,7 @@ Follow these steps to get the project running on your local machine:
 
 ## 📁 Project Structure
 Use code with caution.
-Markdown
+```bash
 .
 ├── app.py # Flask backend application
 ├── requirements.txt # Python dependencies
@@ -110,6 +110,7 @@ Markdown
 └── templates/
 └── index.html # Frontend HTML with CSS and JavaScript
 ## 🤖 AI Model
+```
 
 This project uses the `gemini-1.5-flash-latest` model from the Google Gemini API. The Flask backend sends the uploaded image and a detailed prompt to the model, requesting a structured JSON response containing all the water footprint and environmental data. The backend then parses this JSON to display the information in the frontend.
 
@@ -131,11 +132,3 @@ Please ensure your code adheres to the project's styling and includes necessary 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details (You'll need to create this file if you don't have one).
-
-## 🙏 Acknowledgements
-
-*   Google for the Gemini AI model.
-*   The Flask team for the web framework.
-*   Tailwind CSS for simplifying styling.
-*   Chart.js for creating the interactive charts.
-*   Font Awesome for icons.
