@@ -116,6 +116,11 @@ This project uses the `gemini-1.5-flash-latest` model from the Google Gemini API
 
 The prompt is carefully designed to extract specific information, including units for measurements, to ensure the frontend can display the data accurately. A fallback mechanism is included to handle potential JSON parsing errors, providing raw AI output if structured data extraction fails.
 
+##output photos
+![image](https://github.com/user-attachments/assets/ce123151-5928-42b8-8336-b0df5c00d982)
+![image](https://github.com/user-attachments/assets/679bcc8e-5f82-4aa4-b019-cc27f32e7ae8)
+
+
 ## 👋 Contributing
 
 Contributions are welcome! If you'd like to contribute, please follow these steps:
@@ -128,3 +133,6 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 6.  Open a Pull Request.
 
 Please ensure your code adheres to the project's styling and includes necessary tests if applicable.
+
+
+
